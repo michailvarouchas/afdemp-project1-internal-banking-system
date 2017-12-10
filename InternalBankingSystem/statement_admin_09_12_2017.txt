@@ -1,0 +1,8 @@
+9/12/2017 1:54:14 μμ -> From: admin -> view all accounts
+9/12/2017 1:54:23 μμ -> From: admin -> view cooperative's account
+9/12/2017 1:54:28 μμ -> From: admin -> Send today's statement
+9/12/2017 6:38:26 μμ -> From: admin -> view cooperative's account
+9/12/2017 6:38:44 μμ -> From: admin -> view all accounts
+9/12/2017 6:38:55 μμ -> From: admin -> Send today's statement
+9/12/2017 6:42:13 μμ -> From: admin -> Send today's statement
+9/12/2017 6:42:37 μμ -> From: admin -> Send today's statement
