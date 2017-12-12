@@ -20,10 +20,36 @@ namespace InternalBankingSystem
                                                           "Initial Catalog = afdemp_csharp_1;" +
                                                           "Integrated Security = true;";
 
+        //check if the database is accessible
+        public bool IsDbAccessible()
+        {
+            bool isConnected = false;
+            SqlConnection connect = null;
+
+            try
+            {
+                connect = new SqlConnection(_connectionCredentials);
+                connect.Open();
+                isConnected = true;
+
+            }
+            catch (Exception e)
+            {
+                isConnected = false;
+
+            }
+            finally
+            {
+                if (connect != null)
+                    connect.Close();
+            }
+            return isConnected;
+        }
+
         //view own bank account
         public void ViewSingleAccountDetails(string username, string password)
         {
-            string querry = "SELECT username AS Username, transaction_date AS Last_Transaction, amount AS Amount " +
+            string query = "SELECT username AS Username, transaction_date AS Last_Transaction, amount AS Amount " +
                 "FROM users " +
                 "JOIN accounts ON users.id = accounts.user_id " +
                 "WHERE username = @username AND password = @password";
@@ -32,7 +58,7 @@ namespace InternalBankingSystem
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand(querry, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("username", username);
                     command.Parameters.AddWithValue("password", password);
@@ -68,7 +94,7 @@ namespace InternalBankingSystem
         //view all bank accounts (super admin)
         public void ViewAllAccountDetails()
         {
-            string querry = "SELECT username AS Username, transaction_date AS Last_Transaction, amount AS Amount " +
+            string query = "SELECT username AS Username, transaction_date AS Last_Transaction, amount AS Amount " +
                 "FROM users " +
                 "JOIN accounts ON users.id = accounts.user_id ";
 
@@ -76,7 +102,7 @@ namespace InternalBankingSystem
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand(querry, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     List<InternalBankAccounts> list = new List<InternalBankAccounts>();
 
@@ -106,13 +132,13 @@ namespace InternalBankingSystem
         //make a trasaction
         public bool IsMoneyTransfered(string senderUsername, string receiverUsername, decimal amountToTranfer, out string errMsg)
         {
-            string querry = "UPDATE accounts " +
+            string query = "UPDATE accounts " +
                              "SET amount = amount - @amount, transaction_date = GETDATE() " +
                              "FROM accounts, users " +
                              "WHERE accounts.user_id = users.id AND username = @senderUsername " +
                              "AND @amount < (SELECT amount FROM users JOIN accounts ON accounts.user_id = users.id WHERE username = @senderUsername) ; ";
 
-            string querry2 = "UPDATE accounts " +
+            string query2 = "UPDATE accounts " +
                              "SET amount = amount + @amount, transaction_date = GETDATE() " +
                              "FROM accounts, users " +
                              "WHERE accounts.user_id = users.id AND username = @receiverUsername " +
@@ -129,7 +155,7 @@ namespace InternalBankingSystem
                 SqlTransaction transaction = connection.BeginTransaction();
 
                 //make the first querry
-                using (SqlCommand command = new SqlCommand(querry, connection, transaction))
+                using (SqlCommand command = new SqlCommand(query, connection, transaction))
                 {
                     command.Parameters.AddWithValue("senderUsername", senderUsername);
                     command.Parameters.AddWithValue("amount", amountToTranfer);
@@ -138,7 +164,7 @@ namespace InternalBankingSystem
                     
                 }
                 //make the second querry
-                using (SqlCommand command = new SqlCommand(querry2, connection, transaction))
+                using (SqlCommand command = new SqlCommand(query2, connection, transaction))
                 {
                     command.Parameters.AddWithValue("senderUsername", senderUsername);
                     command.Parameters.AddWithValue("receiverUsername", receiverUsername);
@@ -172,20 +198,20 @@ namespace InternalBankingSystem
             }
         }
 
-        //check username password validity and user level
+        //check username, password validity and user level
         public bool IsOnDB(string username, string password, out UserLevel userLevel)
         {
             userLevel = UserLevel.NotRegistered;
 
-            string querry = "SELECT [username], [password] " +
+            string query = "SELECT [username], [password] " +
                 "FROM [users] " +
-                "WHERE [username] = @username AND [password] =@password";
+                "WHERE [username] = @username AND [password] = @password";
 
             using (SqlConnection connection = new SqlConnection(_connectionCredentials))
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand(querry, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("username", username);
                     command.Parameters.AddWithValue("password", password);
@@ -216,6 +242,7 @@ namespace InternalBankingSystem
 
         }
 
+        //check if username exitsts on DB
         public bool IsOnDB(string username)
         {
             string querry = "SELECT [username]" +

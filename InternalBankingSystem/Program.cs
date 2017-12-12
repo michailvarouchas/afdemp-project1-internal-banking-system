@@ -19,6 +19,26 @@ namespace InternalBankingSystem
 
             //login screen
             LogInScreen.WelcomeScreen();
+            
+            //check db connectivity
+            DbAccess db = new DbAccess();
+            if (db.IsDbAccessible())
+            {
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine("Database is up and running.\n\n");
+            }
+            else
+            {
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.WriteLine("Database connection failed.\n\n");
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey(true);
+                return;
+
+            }
+            Console.BackgroundColor = ConsoleColor.Black;
+
             int tries = 3;
             while (tries > 0)
             {
@@ -29,7 +49,7 @@ namespace InternalBankingSystem
                 string password = LogInScreen.ReadPassword();
 
                 //check the validity against the db
-                DbAccess db = new DbAccess();
+                //DbAccess db = new DbAccess();
                 if (db.IsOnDB(username, password, out UserLevel userLevel))
                 {
                     Console.WriteLine("login successfull");
@@ -44,7 +64,7 @@ namespace InternalBankingSystem
                     //appear proper menu depending on user level
                     if (userLevel == UserLevel.Admin)
                     {
-                        //shows the super admin menu -> previews the results on a clean console screen
+                        //shows the super admin menu & previews the results on a clean console screen
                         while (true)
                         {
                             int selection = Menus.DisplaySelectionMenu(userLevel, username) + 1;
@@ -165,7 +185,7 @@ namespace InternalBankingSystem
                     }
                     else
                     {
-                        //shows the simple user menu -> previews the results on a clean console screen
+                        //shows the simple user menu & previews the results on a clean console screen
                         while (true)
                         {
                             int selection = Menus.DisplaySelectionMenu(userLevel, username) + 1;

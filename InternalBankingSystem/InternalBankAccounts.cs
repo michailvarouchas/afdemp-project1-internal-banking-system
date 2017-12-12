@@ -7,10 +7,12 @@ namespace InternalBankingSystem
 {
     class InternalBankAccounts
     {
+        //properties
         public string Username { get; set; }
         public DateTime TransactionDate { get; set; }
         public decimal Amount { get; set; }
 
+        //methods
         public override string ToString()
         {
             return String.Format("{0, 10} {1, 30:yyyy/MM/dd HH:mm:ss.FFF} {2, 20:C2}\n", Username, TransactionDate, Amount);
