@@ -17,7 +17,7 @@ namespace InternalBankingSystem
     {
         //connection credentials
         private readonly string _connectionCredentials = "Data Source=.\\SQLEXPRESS;" +
-                                                          "Initial Catalog = afdemp_csharp_1;" +
+                                                          "Initial Catalog = internal_banking_system;" +
                                                           "Integrated Security = true;";
 
         //check if the database is accessible
@@ -30,8 +30,18 @@ namespace InternalBankingSystem
             {
                 connect = new SqlConnection(_connectionCredentials);
                 connect.Open();
-                isConnected = true;
 
+                SqlCommand comm = new SqlCommand("SELECT password FROM users WHERE password = HASHBYTES('SHA2_256', 'admin')", connect);
+                var reader = comm.ExecuteReader();
+                if(reader.Read())
+                {
+                    Console.WriteLine("Found admin password");
+                }
+                else
+                {
+                    Console.WriteLine("nothing");
+                }
+                isConnected = true;
             }
             catch (Exception e)
             {
@@ -52,7 +62,7 @@ namespace InternalBankingSystem
             string query = "SELECT username AS Username, transaction_date AS Last_Transaction, amount AS Amount " +
                 "FROM users " +
                 "JOIN accounts ON users.id = accounts.user_id " +
-                "WHERE username = @username AND password = @password";
+                "WHERE username = @username AND password = HASHBYTES('SHA2_256', CONVERT(varchar, @password))";
 
             using (SqlConnection connection = new SqlConnection(_connectionCredentials))
             {
@@ -203,9 +213,9 @@ namespace InternalBankingSystem
         {
             userLevel = UserLevel.NotRegistered;
 
-            string query = "SELECT [username], [password] " +
+            string query = "SELECT [username] " +
                 "FROM [users] " +
-                "WHERE [username] = @username AND [password] = @password";
+                "WHERE [username] = @username AND [password] = HASHBYTES('SHA2_256', CONVERT(varchar, @password))";
 
             using (SqlConnection connection = new SqlConnection(_connectionCredentials))
             {
@@ -223,9 +233,9 @@ namespace InternalBankingSystem
                             var cred = new
                             {
                                 Username = Convert.ToString(reader["username"]),
-                                Password = Convert.ToString(reader["password"])
+                                //Password = Convert.ToString(reader["password"])
                             };
-                            if (cred.Username == "admin" && cred.Password == "admin")
+                            if (cred.Username == "admin")
                             {
                                 userLevel = UserLevel.Admin;
                             }

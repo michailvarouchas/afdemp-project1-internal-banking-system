@@ -47,9 +47,8 @@ namespace InternalBankingSystem
                 string username = Console.ReadLine();
                 Console.Write("Password: ");
                 string password = LogInScreen.ReadPassword();
-
+                
                 //check the validity against the db
-                //DbAccess db = new DbAccess();
                 if (db.IsOnDB(username, password, out UserLevel userLevel))
                 {
                     Console.WriteLine("login successfull");
