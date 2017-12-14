@@ -30,17 +30,6 @@ namespace InternalBankingSystem
             {
                 connect = new SqlConnection(_connectionCredentials);
                 connect.Open();
-
-                SqlCommand comm = new SqlCommand("SELECT password FROM users WHERE password = HASHBYTES('SHA2_256', 'admin')", connect);
-                var reader = comm.ExecuteReader();
-                if(reader.Read())
-                {
-                    Console.WriteLine("Found admin password");
-                }
-                else
-                {
-                    Console.WriteLine("nothing");
-                }
                 isConnected = true;
             }
             catch (Exception e)
